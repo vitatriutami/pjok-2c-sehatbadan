@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz PJOK Kelas 2C - Sehatkan Badanmu Melalui Permainan</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for Kids -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Socket.io Client CDN -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);
+            min-height: 100vh;
+        }
+
+        /* Playful button style */
+        .btn-bounce {
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+        }
+
+        .btn-bounce:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-bounce:active {
+            transform: translateY(2px) scale(0.98);
+        }
+
+        /* Custom Card Styling */
+        .kids-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 4px solid #4ade80;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            border-radius: 2rem;
+        }
+
+        /* Bounce keyframes for title */
+        @keyframes gentle-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .animate-title {
+            animation: gentle-bounce 2.5s infinite ease-in-out;
+        }
+
+        /* Toast animation */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-slide-in {
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Hide Scrollbars smoothly */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col items-center justify-between p-3 sm:p-6 text-slate-800 relative min-h-screen">
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+    </div>
+
+    <!-- Background Animated Floating Icons -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+        <i class="fa-solid fa-heart-pulse text-6xl text-rose-500 absolute top-10 left-10 animate-bounce"
+            style="animation-duration: 3s;"></i>
+        <i class="fa-solid fa-person-running text-6xl text-emerald-600 absolute top-1/4 right-12 animate-bounce"
+            style="animation-duration: 4s;"></i>
+        <i class="fa-solid fa-futbol text-5xl text-blue-500 absolute bottom-20 left-16 animate-bounce"
+            style="animation-duration: 3.5s;"></i>
+        <i class="fa-solid fa-dumbbell text-6xl text-amber-500 absolute bottom-10 right-20 animate-bounce"
+            style="animation-duration: 4.5s;"></i>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="w-full max-w-3xl z-10 my-auto">
+
+        <!-- SCREEN 1: WELCOME / INTRO / INPUT NAMA -->
+        <div id="screen-welcome" class="kids-card p-6 sm:p-10 text-center transition-all duration-300">
+            <!-- Header Mascot & School Badge -->
+            <div
+                class="inline-block bg-emerald-300 p-4 rounded-full border-4 border-emerald-400 mb-3 animate-title shadow-lg">
+                <span class="text-5xl sm:text-6xl">🏃‍♂️🪢⚽</span>
+            </div>
+
+            <div class="mb-2">
+                <span
+                    class="bg-emerald-700 text-white font-extrabold text-xs sm:text-sm px-4 py-1.5 rounded-full tracking-wide shadow-sm uppercase inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-school"></i> MIS NU PALANGKA RAYA
+                </span>
+            </div>
+
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-emerald-800 tracking-wide mb-1">
+                QUIZ INTERAKTIF PJOK KELAS 2C
+            </h1>
+            <p class="text-base sm:text-lg font-bold text-slate-700 mb-3">
+                Topik: <span
+                    class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full border border-emerald-300">Bab
+                    "Sehatkan Badanmu" Melalui Permainan!</span>
+            </p>
+
+            <!-- Text Intro & Informasi Pengampu -->
+            <div
+                class="bg-amber-50 border-2 border-dashed border-amber-300 rounded-2xl p-4 sm:p-5 mb-5 text-slate-700 text-xs sm:text-sm max-w-lg mx-auto shadow-sm text-left">
+                <div
+                    class="font-extrabold text-emerald-900 text-base sm:text-lg mb-2 flex items-center gap-2 border-b border-amber-200 pb-2">
+                    <i class="fa-solid fa-calendar-check text-amber-500"></i>
+                    <span>Selasa, 20 Oktober 2026</span>
+                    <span class="ml-auto text-xs bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md font-bold">Guru: Ibu
+                        Sri Haryati, S.Pd</span>
+                </div>
+                <p class="text-slate-800 font-bold text-sm sm:text-base mb-2">
+                    "Halo Anak-Anak Hebat MIS NU Palangka Raya! 👋"
+                </p>
+                <p class="text-slate-600 font-medium leading-relaxed">
+                    Selamat datang di kelas PJOK hari ini, Selasa, 20 Oktober 2026 bersama Ibu Sri Haryati, S.Pd. Yuk,
+                    kita belajar bagaimana cara membuat badan kita sehat, kuat, dan bugar lewat permainan yang seru dan
+                    menyenangkan!
+                </p>
+            </div>
+
+            <!-- Ringkasan Materi Singkat -->
+            <div
+                class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 mb-6 text-left max-w-lg mx-auto shadow-sm text-xs sm:text-sm">
+                <h3 class="font-extrabold text-sky-900 text-sm sm:text-base mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> Rangkuman Materi Singkat:
+                </h3>
+
+                <div class="mb-2">
+                    <p class="font-bold text-sky-800 text-xs sm:text-sm">Mengapa Harus Bergerak dan Bermain?</p>
+                    <ul class="list-disc list-inside text-slate-600 font-medium pl-1 space-y-0.5">
+                        <li>🫀 <b>Jantung & Paru-Paru Sehat:</b> Bergerak aktif membuat aliran darah lancar dan napas
+                            lebih segar.</li>
+                        <li>🦴 <b>Otot & Tulang Kuat:</b> Berlari, melompat, dan meregangkan badan membuat otot lentur
+                            dan tidak kaku.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <p class="font-bold text-sky-800 text-xs sm:text-sm">Bermain Sambil Sehat:</p>
+                    <ul class="list-disc list-inside text-slate-600 font-medium pl-1 space-y-0.5">
+                        <li>🏃 <b>Permainan Bola (Kasti & Sepak Bola):</b> Melatih kelincahan, fokus, serta koordinasi
+                            tangan, kaki, dan mata.</li>
+                        <li>🪢 <b>Lompat Tali & Lari Estafet:</b> Melatih ketahanan jantung dan kekuatan otot kaki.</li>
+                        <li>🐍 <b>Senam Kelenturan (Kobra & Kayang):</b> Melatih kelenturan tulang belakang dan menjaga
+                            postur tubuh tetap tegap.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Form Input -->
+            <div class="max-w-md mx-auto space-y-4">
+                <div class="text-left">
+                    <label for="student-name" class="block text-base sm:text-lg font-bold text-slate-700 mb-2 pl-2">
+                        <i class="fa-solid fa-user-pen text-emerald-600 mr-1"></i> Ketik Nama Lengkapmu:
+                    </label>
+                    <input type="text" id="student-name" placeholder="Contoh: Budi Santoso..."
+                        class="w-full text-lg sm:text-xl px-5 py-4 border-4 border-emerald-300 rounded-2xl focus:border-emerald-500 focus:outline-none shadow-inner text-emerald-900 font-bold bg-emerald-50/50 transition">
+                    <p id="name-error" class="text-rose-500 font-bold text-sm mt-2 hidden text-left pl-2 animate-pulse">
+                        <i class="fa-solid fa-circle-exclamation mr-1"></i> Ups! Tolong isi nama kamu dulu sebelum mulai
+                        ya!
+                    </p>
+                </div>
+
+                <button onclick="startQuiz()"
+                    class="btn-bounce w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-extrabold text-xl sm:text-2xl py-4 rounded-2xl shadow-lg border-b-4 border-emerald-700 flex items-center justify-center gap-3">
+                    <span>Mulai Kuis Bermain & Sehat!</span>
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </button>
+
+                <!-- Protected Shortcut for teacher tab view -->
+                <button onclick="openTeacherPinModal()"
+                    class="text-slate-500 hover:text-emerald-700 font-bold text-xs sm:text-sm underline pt-2 inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-lock text-emerald-600"></i> Area Guru / Rekap Nilai Real-time
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: QUIZ INTERAKTIF -->
+        <div id="screen-quiz" class="kids-card p-5 sm:p-8 hidden transition-all duration-300">
+            <!-- Header Bar -->
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-4 border-b-2 border-emerald-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <span
+                        class="bg-emerald-500 text-white text-xs sm:text-sm font-bold px-3 py-1 rounded-full uppercase tracking-wider">PJOK
+                        Kelas 2C</span>
+                    <span id="display-student-name"
+                        class="font-bold text-slate-700 text-sm sm:text-base max-w-[150px] truncate">Siswa</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-bold text-slate-500" id="question-tracker">Soal 1/10</span>
+                    <span
+                        class="bg-amber-400 text-amber-950 font-black text-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-trophy text-amber-700"></i> Skor: <span id="current-score">0</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Visual HTML5 Canvas Animation Area -->
+            <div
+                class="relative bg-gradient-to-b from-sky-200 to-sky-100 rounded-2xl overflow-hidden border-4 border-sky-300 mb-5 shadow-inner">
+                <canvas id="quiz-canvas" width="600" height="180" class="w-full h-36 sm:h-44 block"></canvas>
+                <div
+                    class="absolute top-2 right-2 bg-white/80 backdrop-blur text-xs text-sky-900 font-bold px-2 py-1 rounded-lg shadow">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1"></i> Visual Gerakan Sehat
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="mb-6">
+                <h2 id="question-text"
+                    class="text-xl sm:text-2xl font-extrabold text-slate-800 leading-snug min-h-[60px]">
+                    Memuat pertanyaan...
+                </h2>
+            </div>
+
+            <!-- Answer Options Buttons -->
+            <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
+                <!-- Dynamically populated options -->
+            </div>
+
+            <!-- Encouragement Modal / Feedback Alert -->
+            <div id="feedback-box"
+                class="hidden p-4 rounded-2xl mb-4 text-center font-bold text-lg border-4 transition-all">
+                <!-- Feedback message here -->
+            </div>
+
+            <!-- Navigation Button -->
+            <div class="flex justify-end">
+                <button id="next-btn" onclick="nextQuestion()" disabled
+                    class="btn-bounce bg-slate-300 text-slate-500 font-extrabold text-lg px-8 py-3 rounded-2xl cursor-not-allowed transition flex items-center gap-2">
+                    <span>Lanjut</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RESULTS & CELEBRATION -->
+        <div id="screen-result" class="kids-card p-6 sm:p-10 text-center hidden transition-all duration-300">
+            <div class="inline-block bg-emerald-100 p-4 rounded-full border-4 border-emerald-300 mb-3 animate-bounce">
+                <span id="result-icon" class="text-6xl">🏆</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl font-black text-emerald-700 mb-1">HASIL KUIS PJOK</h1>
+            <p id="result-greeting" class="text-xl sm:text-2xl font-extrabold text-slate-800 mb-4">
+                Hebat, [Nama]!
+            </p>
+
+            <!-- Star Rating Badge -->
+            <div id="stars-container" class="flex justify-center gap-2 text-4xl sm:text-5xl text-amber-400 mb-6">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+            </div>
+
+            <!-- Score Box -->
+            <div
+                class="bg-gradient-to-r from-amber-100 via-yellow-50 to-amber-100 border-4 border-amber-300 rounded-3xl p-6 mb-6 max-w-md mx-auto shadow-sm">
+                <p class="text-slate-600 font-bold text-lg mb-1">NILAI KAMU:</p>
+                <div class="text-6xl sm:text-7xl font-black text-amber-600 mb-2" id="final-score-display">
+                    100
+                </div>
+                <p id="result-summary" class="text-slate-700 font-bold text-sm sm:text-base">
+                    Kamu menjawab 10 dari 10 soal dengan benar!
+                </p>
+            </div>
+
+            <!-- Encouragement Message Card -->
+            <div id="appreciation-card"
+                class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 mb-8 text-emerald-900 font-bold text-base sm:text-lg">
+                "Luar biasa! Kamu sudah paham betul cara menjaga kesehatan badan melalui olahraga dan permainan yang
+                menyenangkan!"
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
+                <button onclick="restartQuiz()"
+                    class="btn-bounce flex-1 bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-lg py-4 px-6 rounded-2xl shadow-lg border-b-4 border-amber-600 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Coba Lagi</span>
+                </button>
+                <button onclick="openTeacherPinModal()"
+                    class="btn-bounce flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg py-4 px-6 rounded-2xl shadow-lg border-b-4 border-emerald-800 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Rekap Guru</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TEACHER PIN AUTH MODAL -->
+    <div id="pin-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div
+            class="bg-white border-4 border-emerald-500 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative">
+            <button onclick="closePinModal()"
+                class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 text-xl font-bold">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div
+                class="w-14 h-14 bg-emerald-100 rounded-full border-2 border-emerald-400 flex items-center justify-center mx-auto mb-3 text-emerald-700 text-2xl">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-slate-800 mb-1">Akses Guru</h3>
+            <p class="text-xs text-slate-500 mb-4">Masukkan PIN khusus untuk membuka Rekap Nilai Siswa Real-time (MIS NU
+                Palangka Raya):</p>
+
+            <input type="password" id="pin-input" maxlength="6" placeholder="Masukkan PIN..."
+                class="w-full text-center text-2xl tracking-widest py-3 border-4 border-slate-300 rounded-2xl font-black text-emerald-900 focus:border-emerald-500 focus:outline-none mb-2">
+
+            <p id="pin-error" class="text-rose-500 font-bold text-xs mb-3 hidden">
+                <i class="fa-solid fa-circle-xmark mr-1"></i> PIN Salah!
+            </p>
+
+            <button onclick="verifyPin()"
+                class="btn-bounce w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl shadow border-b-4 border-emerald-800 text-base">
+                Buka Rekap Real-time
+            </button>
+            <p class="text-[11px] text-slate-400 mt-3 font-semibold">Petunjuk: Ibu Sri Haryati, S.Pd.</p>
+        </div>
+    </div>
+
+    <!-- TEACHER RECAP MODAL -->
+    <div id="teacher-modal"
+        class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div
+            class="bg-white border-4 border-emerald-500 rounded-3xl max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-3 border-b pb-3">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-user-graduate text-2xl text-emerald-600"></i>
+                        <h3 class="text-xl sm:text-2xl font-black text-slate-800">Rekap Nilai Real-time</h3>
+                    </div>
+                    <p class="text-xs font-bold text-emerald-700">MIS NU Palangka Raya &bull; Pengampu: Ibu Sri Haryati,
+                        S.Pd.</p>
+                </div>
+                <button onclick="closeTeacherModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+
+            <div
+                class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 mb-3 text-xs text-emerald-800 font-semibold flex items-center justify-between">
+                <span><i class="fa-solid fa-wifi text-emerald-600 mr-1 animate-pulse"></i> Server Backend Real-Time
+                    Aktif</span>
+                <span id="server-status-badge"
+                    class="bg-emerald-200 px-2 py-0.5 rounded text-[10px] font-extrabold text-emerald-900">Terhubung</span>
+            </div>
+
+            <!-- Table area -->
+            <div class="overflow-y-auto flex-1 mb-4 border rounded-xl no-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-emerald-100 text-emerald-900 sticky top-0 font-bold text-sm sm:text-base">
+                        <tr>
+                            <th class="p-3 border-b">No</th>
+                            <th class="p-3 border-b">Nama Siswa</th>
+                            <th class="p-3 border-b text-center">Skor</th>
+                            <th class="p-3 border-b text-center">Benar/Total</th>
+                            <th class="p-3 border-b">Tanggal & Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-table-body" class="text-sm font-semibold text-slate-700 divide-y">
+                        <!-- Data rows inserted via JS -->
+                    </tbody>
+                </table>
+                <div id="empty-data-msg" class="text-center py-8 text-slate-400 font-bold hidden">
+                    Belum ada data nilai siswa. Silakan lakukan pengerjaan kuis terlebih dahulu!
+                </div>
+            </div>
+
+            <!-- Modal Bottom Actions -->
+            <div class="flex flex-wrap justify-between items-center gap-3 pt-2 border-t">
+                <button onclick="promptClearRecap()"
+                    class="text-rose-600 hover:text-rose-800 font-bold text-xs sm:text-sm flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can"></i> Hapus Semua Data
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="downloadCSV()"
+                        class="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow border-b-2 border-emerald-800 flex items-center gap-2">
+                        <i class="fa-solid fa-file-csv text-lg"></i> Unduh Rekap (CSV)
+                    </button>
+                    <button onclick="closeTeacherModal()"
+                        class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRMATION MODAL (No alert/confirm) -->
+    <div id="confirm-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white border-4 border-rose-500 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl">
+            <div
+                class="w-14 h-14 bg-rose-100 rounded-full border-2 border-rose-400 flex items-center justify-center mx-auto mb-3 text-rose-600 text-2xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-slate-800 mb-2">Hapus Rekap Nilai?</h3>
+            <p class="text-xs text-slate-600 mb-5 font-semibold">Apakah Anda yakin ingin menghapus semua data rekap
+                nilai lokal di peramban ini?</p>
+            <div class="flex gap-3">
+                <button onclick="executeClearRecap()"
+                    class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">
+                    Ya, Hapus
+                </button>
+                <button onclick="closeConfirmModal()"
+                    class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold py-3 rounded-xl text-sm">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-slate-700 font-bold text-xs sm:text-sm z-10">
+        Quiz PJOK Kelas 2C &bull; MIS NU Palangka Raya &bull; Ibu Sri Haryati, S.Pd. (20 Oktober 2026)
+    </footer>
+
+    <!-- SERVER & SOCKET.IO CONFIGURATION -->
+    <script>
+        // BACKEND SERVER URL MILIK SENDIRI
+        const SERVER_URL = "https://quiz-pjok-misnu-be.fly.dev";
+
+        // Inisialisasi Socket.io Client
+        let socket;
+        try {
+            socket = io(SERVER_URL, {
+                transports: ['polling', 'websocket'],
+                reconnectionAttempts: 3,
+                timeout: 5000,
+                autoConnect: true
+            });
+
+            socket.on('connect', () => {
+                console.log("Terhubung ke server Socket.io:", socket.id);
+                updateServerStatus(true);
+            });
+
+            socket.on('disconnect', () => {
+                console.warn("Terputus dari server Socket.io");
+                updateServerStatus(false);
+            });
+
+            socket.on('connect_error', (err) => {
+                console.warn("Koneksi Socket.io ke server cloud tidak tersedia (menggunakan mode lokal):", err.message);
+                updateServerStatus(false);
+            });
+
+            // LISTEN REAL-TIME UPDATE (Dashboard Guru Update Otomatis)
+            socket.on('nilai_baru', (dataSiswaBaru) => {
+                console.log("Ada nilai baru masuk secara real-time!", dataSiswaBaru);
+
+                const formattedData = normalizeDataRow(dataSiswaBaru);
+                window.currentRealtimeRecords.unshift(formattedData);
+
+                const modal = document.getElementById('teacher-modal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    renderTabelGuru(window.currentRealtimeRecords);
+                }
+
+                const scoreText = formattedData.skor !== undefined ? formattedData.skor : formattedData.score;
+                tampilkanNotifikasiToast(`Nilai baru masuk: <b>${escapeHtml(formattedData.nama || formattedData.name)}</b> (Skor: ${scoreText})`);
+            });
+
+        } catch (e) {
+            console.warn("Gagal menginisialisasi Socket.io, berjalan dalam mode lokal:", e);
+            updateServerStatus(false);
+        }
+
+        // UPDATE STATUS BADGE SERVER
+        function updateServerStatus(isOnline) {
+            const badge = document.getElementById('server-status-badge');
+            if (!badge) return;
+
+            if (isOnline) {
+                badge.className = "bg-emerald-200 px-2 py-0.5 rounded text-[10px] font-extrabold text-emerald-900 border border-emerald-400";
+                badge.innerText = "Online (Real-time)";
+            } else {
+                badge.className = "bg-amber-200 px-2 py-0.5 rounded text-[10px] font-extrabold text-amber-900 border border-amber-400";
+                badge.innerText = "Modus Lokal (Offline)";
+            }
+        }
+
+        // KIRIM SKOR KE SERVER BACKEND WITH TIMEOUT
+        async function kirimSkorKeServerMilikSendiri(namaSiswa, skorSiswa, correctCount, totalQuestions) {
+            const payload = {
+                nama: namaSiswa,
+                skor: skorSiswa,
+                correct: correctCount,
+                total: totalQuestions,
+                date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                timestamp: Date.now()
+            };
+
+            saveLocalRecord(payload);
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+            try {
+                const response = await fetch(`${SERVER_URL}/api/simpan-nilai`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log("Skor tersimpan di server cloud:", result);
+                    updateServerStatus(true);
+                } else {
+                    console.warn("Server merespon dengan status non-OK:", response.status);
+                    updateServerStatus(false);
+                }
+            } catch (error) {
+                clearTimeout(timeoutId);
+                console.warn("Gagal mengirim data ke server backend (tersimpan lokal):", error.name === 'AbortError' ? 'Request Timeout' : error.message);
+                updateServerStatus(false);
+            }
+        }
+
+        // LOAD DATA REKAP GURU
+        async function loadDataRekapGuru() {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+            try {
+                const response = await fetch(`${SERVER_URL}/api/rekap-nilai`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const list = Array.isArray(data) ? data : (data.data || []);
+
+                    window.currentRealtimeRecords = list.map(normalizeDataRow);
+                    renderTabelGuru(window.currentRealtimeRecords);
+                    updateServerStatus(true);
+                    return;
+                }
+            } catch (error) {
+                clearTimeout(timeoutId);
+                console.warn("Gagal mengambil data rekap dari server cloud, beralih ke rekap lokal:", error.message);
+            }
+
+            updateServerStatus(false);
+            const localData = getLocalRecords();
+            window.currentRealtimeRecords = localData;
+            renderTabelGuru(window.currentRealtimeRecords);
+        }
+
+        function normalizeDataRow(item) {
+            return {
+                name: item.nama || item.name || 'Siswa',
+                score: item.skor !== undefined ? item.skor : (item.score !== undefined ? item.score : 0),
+                correct: item.correct !== undefined ? item.correct : Math.round((item.skor || item.score || 0) / 10),
+                total: item.total || 10,
+                date: item.date || item.waktu || new Date(item.timestamp || Date.now()).toLocaleString('id-ID'),
+                timestamp: item.timestamp || Date.now()
+            };
+        }
+
+        function tampilkanNotifikasiToast(pesan) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto bg-slate-900/90 text-white p-3 sm:p-4 rounded-2xl shadow-xl border-2 border-emerald-400 text-xs sm:text-sm flex items-center gap-3 toast-slide-in backdrop-blur-md';
+            toast.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 text-white font-bold">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="flex-1">${pesan}</div>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = 'all 0.4s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        function saveLocalRecord(record) {
+            try {
+                let records = getLocalRecords();
+                records.unshift(normalizeDataRow(record));
+                localStorage.setItem('pjok_quiz_recap', JSON.stringify(records));
+            } catch (e) { }
+        }
+
+        function getLocalRecords() {
+            try {
+                const stored = localStorage.getItem('pjok_quiz_recap');
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+    </script>
+
+    <!-- QUIZ LOGIC & CANVAS ENGINE -->
+    <script>
+        /* ARRAY DATA PERMAINAN / KUIS PILIHAN GANDA (10 Soal "Sehatkan Badanmu") */
+        const quizQuestionsData = [
+            {
+                id: 1,
+                pertanyaan: "Agar badan kita tumbuh sehat, kuat, dan tidak mudah sakit, kita harus rajin...",
+                pilihan: ["Bermain & Berolahraga Aktif", "Tidur Seharian", "Main HP Terus-menerus"],
+                kunci: "Bermain & Berolahraga Aktif",
+                petunjuk: "Bergerak aktif membuat tubuh kita makin bugar!",
+                visualCanvas: "badan_sehat"
+            },
+            {
+                id: 2,
+                pertanyaan: "Bermain lari estafet dan mengejar bola bersama teman bermanfaat untuk melatih kekuatan otot...",
+                pilihan: ["Telinga", "Kaki", "Lidah"],
+                kunci: "Kaki",
+                petunjuk: "Berlari menggunakan kaki agar langkah makin lincah!",
+                visualCanvas: "berlari_lincah"
+            },
+            {
+                id: 3,
+                pertanyaan: "Permainan kasti membuat tubuh sehat karena melatih koordinasi tangan dan mata saat...",
+                pilihan: ["Melempar dan Memukul Bola", "Melihat Pemandangan", "Duduk di Pinggir Field"],
+                kunci: "Melempar dan Memukul Bola",
+                petunjuk: "Ayunkan pemukul dan lempar bola kecil dengan tepat!",
+                visualCanvas: "permainan_kasti"
+            },
+            {
+                id: 4,
+                pertanyaan: "Bermain melompati tali yang diputar sangat baik untuk kesehatan jantung dan kekuatan...",
+                pilihan: ["Gigi", "Kaki dan Tangan", "Rambut"],
+                kunci: "Kaki dan Tangan",
+                petunjuk: "Kaki melompat dan tangan mengayun tali dengan kompak!",
+                visualCanvas: "lompat_tali"
+            },
+            {
+                id: 5,
+                pertanyaan: "Melakukan gerakan melengkungkan badan seperti sikap kobra berguna untuk membuat otot punggung menjadi...",
+                pilihan: ["Kaku dan Sakit", "Lentur dan Sehat", "Lemah"],
+                kunci: "Lentur dan Sehat",
+                petunjuk: "Peregangan kobra menjaga tulang belakang tetap lentur!",
+                visualCanvas: "sikap_kobra"
+            },
+            {
+                id: 6,
+                pertanyaan: "Latihan sikap kayang dengan menumpu pada kedua tangan dan kaki bermanfaat untuk menjaga...",
+                pilihan: ["Kelenturan Tubuh", "Rasa Mengantuk", "Warna Kulit"],
+                kunci: "Kelenturan Tubuh",
+                petunjuk: "Meregangkan badan melengkung melatih kelenturan seluruh tubuh!",
+                visualCanvas: "sikap_kayang"
+            },
+            {
+                id: 7,
+                pertanyaan: "Saat bermain sepak bola di lapangan, menendang dan menggiring bola membuat aliran darah di tubuh menjadi...",
+                pilihan: ["Lancar dan Segar", "Macet", "Berhenti"],
+                kunci: "Lancar dan Segar",
+                petunjuk: "Aktivitas fisik memompa darah segar ke seluruh tubuh!",
+                visualCanvas: "menggiring_bola"
+            },
+            {
+                id: 8,
+                pertanyaan: "Sebelum mulai bermain permainan yang banyak berlari, kita perlu melakukan pemanasan agar otot tidak...",
+                pilihan: ["Cedera atau Cepat Lelah", "Makin Tinggi", "Warna Merah"],
+                kunci: "Cedera atau Cepat Lelah",
+                petunjuk: "Pemanasan menyiapkan otot sebelum bergerak aktif!",
+                visualCanvas: "pemanasan_sehat"
+            },
+            {
+                id: 9,
+                pertanyaan: "Setelah selesai bermain dan berolahraga hingga berkeringat, cara terbaik untuk menyegarkan badan kembali adalah...",
+                pilihan: ["Minum Air Putih Cukup", "Makan Makanan Manis Berlebih", "Langsung Tidur di Lantai"],
+                kunci: "Minum Air Putih Cukup",
+                petunjuk: "Air putih menggantikan cairan tubuh yang keluar saat berkeringat!",
+                visualCanvas: "minum_air"
+            },
+            {
+                id: 10,
+                pertanyaan: "Bermain bersama teman dengan jujur, sportif, dan gembira membuat hati senang sehingga pikiran menjadi...",
+                pilihan: ["Sedih", "Sehat dan Bahagia", "Pusing"],
+                kunci: "Sehat dan Bahagia",
+                petunjuk: "Hati gembira adalah obat yang paling manjur untuk kesehatan!",
+                visualCanvas: "hati_bahagia"
+            }
+        ];
+
+        /* Adaptor Array Soal agar kompatibel dengan logika pengerjaan */
+        const quizQuestions = quizQuestionsData.map(q => {
+            return {
+                question: `${q.id}. ${q.pertanyaan}`,
+                options: q.pilihan,
+                answer: q.pilihan.indexOf(q.kunci),
+                type: q.visualCanvas,
+                explanation: q.petunjuk
+            };
+        });
+
+        /* Global App State */
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let studentName = "";
+        let selectedOptionIndex = null;
+        let animationFrameId = null;
+        let canvasState = { action: 'idle', frame: 0 };
+        window.currentRealtimeRecords = [];
+
+        /* Sound Effects Synthesizer */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    const now = audioCtx.currentTime;
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1);
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'wrong') {
+                    const now = audioCtx.currentTime;
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(130, now + 0.25);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'fanfare') {
+                    const now = audioCtx.currentTime;
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.setValueAtTime(554.37, now + 0.15);
+                    osc.frequency.setValueAtTime(659.25, now + 0.3);
+                    osc.frequency.setValueAtTime(880, now + 0.45);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    osc.start(now);
+                    osc.stop(now + 0.8);
+                }
+            } catch (e) { }
+        }
+
+        /* Canvas Animation Engine untuk Gerakan Olahraga & Permainan Menyehatkan */
+        const canvas = document.getElementById('quiz-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function initCanvasAnimation() {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            canvasState.frame = 0;
+            renderLoop();
+        }
+
+        function renderLoop() {
+            canvasState.frame++;
+            const width = canvas.width;
+            const height = canvas.height;
+            const f = canvasState.frame;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Sky / Background Gradient
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+            skyGrad.addColorStop(0, '#bae6fd');
+            skyGrad.addColorStop(1, '#e0f2fe');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, width, height);
+
+            // Sun
+            ctx.fillStyle = '#fde047';
+            ctx.beginPath();
+            ctx.arc(width - 50, 35, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Grass Field
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(0, height - 35, width, 35);
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(0, height - 35, width, 5);
+
+            const vType = quizQuestions[currentQuestionIndex]?.type || 'badan_sehat';
+
+            // Animasi Selebrasi Jawaban Benar & Umpan Balik Positif
+            if (canvasState.action === 'correct') {
+                drawCelebrationHealthyAnimation(width, height, f);
+            } else if (canvasState.action === 'wrong') {
+                drawFriendlyEncouragementAnimation(width, height, f);
+            } else {
+                // Visual Animasi Gerakan Spesifik Soal
+                switch (vType) {
+                    case 'badan_sehat': drawHealthyJumpingScene(width, height, f); break;
+                    case 'berlari_lincah': drawRunningEstafetScene(width, height, f); break;
+                    case 'permainan_kasti': drawKastiBattingScene(width, height, f); break;
+                    case 'lompat_tali': drawRopeJumpingScene(width, height, f); break;
+                    case 'sikap_kobra': drawCobraPoseScene(width, height, f); break;
+                    case 'sikap_kayang': drawKayangPoseScene(width, height, f); break;
+                    case 'menggiring_bola': drawDribblingFootballScene(width, height, f); break;
+                    case 'pemanasan_sehat': drawWarmingUpScene(width, height, f); break;
+                    case 'minum_air': drawDrinkingWaterScene(width, height, f); break;
+                    case 'hati_bahagia': drawHappyFriendsScene(width, height, f); break;
+                    default: drawHealthyJumpingScene(width, height, f);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(renderLoop);
+        }
+
+        /* HELPER DRAWING FUNCTIONS FOR PJOK ANIMATIONS */
+
+        // Karakter Bugar Melompat Gembira (Badan Sehat / Pemanasan)
+        function drawHealthyJumpingScene(w, h, f) {
+            const jumpY = Math.abs(Math.sin(f * 0.1)) * 25;
+            drawStickman(w / 2, h - 35 - jumpY, 1.1, 'jumping');
+
+            // Detak Jantung Sehat / Sinar Bugar
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 20px Fredoka';
+            ctx.fillText('❤️', w / 2 - 40, h - 90 - jumpY);
+            ctx.fillText('✨', w / 2 + 35, h - 85 - jumpY);
+        }
+
+        // Karakter Berlari Lincah
+        function drawRunningEstafetScene(w, h, f) {
+            const runX = (f * 4) % (w + 100) - 50;
+            drawStickman(runX, h - 35, 1, 'running');
+
+            // Tongkat Estafet
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(runX + 10, h - 55);
+            ctx.lineTo(runX + 22, h - 60);
+            ctx.stroke();
+        }
+
+        // Permainan Kasti (Memukul Bola)
+        function drawKastiBattingScene(w, h, f) {
+            drawStickman(120, h - 35, 1, 'hit_kasti');
+            const t = (f % 70) / 70;
+            const ballX = 130 + t * (w - 180);
+            const ballY = (h - 60) - Math.sin(t * Math.PI) * 70;
+            drawBall(ballX, ballY, 8, '#ef4444');
+        }
+
+        // Lompat Tali Dinamis
+        function drawRopeJumpingScene(w, h, f) {
+            const jumpY = Math.abs(Math.sin(f * 0.15)) * 20;
+            drawStickman(w / 2, h - 35 - jumpY, 1, 'idle');
+
+            // Tali Memutar
+            const ropeAngle = f * 0.15;
+            const ropeYScale = Math.cos(ropeAngle) * 45;
+            ctx.beginPath();
+            ctx.ellipse(w / 2, h - 55, 35, Math.abs(ropeYScale), 0, 0, Math.PI * 2);
+            ctx.strokeStyle = '#8b5cf6';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        // Sikap Kobra (Kelenturan Punggung)
+        function drawCobraPoseScene(w, h, f) {
+            ctx.save();
+            ctx.translate(w / 2, h - 35);
+
+            // Badan Melengkung Ke Atas
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 5;
+
+            // Kaki Lurus Di Tanah
+            ctx.beginPath();
+            ctx.moveTo(-40, -5);
+            ctx.lineTo(0, -5);
+            ctx.stroke();
+
+            // Punggung Melengkung Naik
+            const flex = Math.sin(f * 0.08) * 5;
+            ctx.beginPath();
+            ctx.moveTo(0, -5);
+            ctx.quadraticCurveTo(15, -20, 25, -45 + flex);
+            ctx.stroke();
+
+            // Kepala Kobra
+            ctx.beginPath();
+            ctx.arc(28, -55 + flex, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#fde047';
+            ctx.fill();
+            ctx.stroke();
+
+            // Tangan Menumpu
+            ctx.beginPath();
+            ctx.moveTo(15, -20);
+            ctx.lineTo(15, -5);
+            ctx.stroke();
+
+            // Teks Indikator Kelenturan
+            ctx.fillStyle = '#047857';
+            ctx.font = 'bold 12px Fredoka';
+            ctx.fillText('Kelenturan Punggung ✨', -30, -65);
+
+            ctx.restore();
+        }
+
+        // Sikap Kayang
+        function drawKayangPoseScene(w, h, f) {
+            ctx.save();
+            ctx.translate(w / 2, h - 35);
+
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 5;
+
+            const arch = Math.sin(f * 0.05) * 4;
+
+            // Lengkungan Tubuh Kayang
+            ctx.beginPath();
+            ctx.moveTo(-30, -5); // Tangan
+            ctx.quadraticCurveTo(0, -65 + arch, 30, -5); // Kaki
+            ctx.stroke();
+
+            // Kepala Menghadap Bawah
+            ctx.beginPath();
+            ctx.arc(0, -35 + arch, 9, 0, Math.PI * 2);
+            ctx.fillStyle = '#fde047';
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#0284c7';
+            ctx.font = 'bold 12px Fredoka';
+            ctx.fillText('Sikap Kayang 🤸', -35, -70);
+
+            ctx.restore();
+        }
+
+        // Menggiring Sepak Bola
+        function drawDribblingFootballScene(w, h, f) {
+            const dribbleX = 80 + ((f * 3) % (w - 160));
+            drawStickman(dribbleX, h - 35, 1, 'running');
+            drawBall(dribbleX + 22, h - 43, 11, '#3b82f6');
+        }
+
+        // Pemanasan Gerakan Lengan & Badan
+        function drawWarmingUpScene(w, h, f) {
+            const armAngle = Math.sin(f * 0.1) * 30;
+            drawStickman(w / 2, h - 35, 1.1, 'warming_up', armAngle);
+        }
+
+        // Minum Air Putih Cukup
+        function drawDrinkingWaterScene(w, h, f) {
+            drawStickman(w / 2 - 20, h - 35, 1, 'idle');
+
+            // Botol Air Putih
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(w / 2, h - 70, 12, 22);
+            ctx.strokeStyle = '#0284c7';
+            ctx.strokeRect(w / 2, h - 70, 12, 22);
+
+            // Gelembung Segar
+            const bubbleY = (f * 2) % 30;
+            ctx.fillStyle = '#7dd3fc';
+            ctx.beginPath();
+            ctx.arc(w / 2 + 6, h - 75 - bubbleY, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Hati Bahagia & Bermain Bersama
+        function drawHappyFriendsScene(w, h, f) {
+            const bounce = Math.abs(Math.sin(f * 0.1)) * 12;
+            drawStickman(w / 2 - 40, h - 35 - bounce, 0.95, 'jumping');
+            drawStickman(w / 2 + 40, h - 35 - bounce, 0.95, 'jumping');
+
+            ctx.fillStyle = '#ec4899';
+            ctx.font = '24px Fredoka';
+            ctx.fillText('💖', w / 2 - 10, h - 75 - bounce);
+        }
+
+        /* Selebrasi Karakter Bertenaga / Sehat saat Benar */
+        function drawCelebrationHealthyAnimation(w, h, f) {
+            // Latar Sinar Sehat Bugar
+            ctx.save();
+            ctx.translate(w / 2, h / 2);
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.3)';
+            ctx.lineWidth = 4;
+            for (let i = 0; i < 12; i++) {
+                ctx.rotate(Math.PI / 6);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, 120);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            // Teks Selebrasi
+            ctx.fillStyle = '#047857';
+            ctx.font = '900 22px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.fillText('Badan Sehat & Bugar! 👍', w / 2, 38);
+
+            // Karakter Bouncing Bertenaga
+            const jumpY = Math.abs(Math.sin(f * 0.2)) * 30;
+            drawStickman(w / 2, h - 35 - jumpY, 1.2, 'jumping');
+
+            // Efek Bintang
+            const starScale = (f % 20) / 20;
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = '20px Fredoka';
+            ctx.fillText('⭐', w / 2 - 60, h - 80 - jumpY);
+            ctx.fillText('🌟', w / 2 + 60, h - 85 - jumpY);
+        }
+
+        /* Umpan Balik Positif saat Salah */
+        function drawFriendlyEncouragementAnimation(w, h, f) {
+            ctx.fillStyle = '#0284c7';
+            ctx.font = '900 18px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.fillText('Yuk, coba lagi! Mari jaga badan tetap sehat! 😊', w / 2, 38);
+
+            // Karakter Menggeleng Ramah
+            const headShake = Math.sin(f * 0.15) * 8;
+            drawStickman(w / 2 + headShake, h - 35, 1, 'idle');
+        }
+
+        /* Generic Stickman Drawer dengan Pose Kustom PJOK */
+        function drawStickman(x, y, scale = 1, pose = 'idle', extraParam = 0) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.lineWidth = 4 * scale;
+            ctx.strokeStyle = '#1e293b';
+
+            // Head
+            ctx.beginPath();
+            ctx.arc(0, -40 * scale, 12 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = '#fde047';
+            ctx.fill();
+            ctx.stroke();
+
+            // Eyes
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(3 * scale, -42 * scale, 2 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Smile
+            ctx.beginPath();
+            ctx.arc(2 * scale, -38 * scale, 5 * scale, 0.1, Math.PI * 0.9);
+            ctx.stroke();
+
+            // Body
+            ctx.beginPath();
+            ctx.moveTo(0, -28 * scale);
+            ctx.lineTo(0, -10 * scale);
+            ctx.stroke();
+
+            // Limbs by Pose
+            ctx.beginPath();
+            if (pose === 'jumping') {
+                // Tangan Ke Atas Bertenaga
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(-18 * scale, -45 * scale);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(18 * scale, -45 * scale);
+                // Kaki Tekuk Terangkat
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(-12 * scale, -2 * scale);
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(12 * scale, -2 * scale);
+            } else if (pose === 'running') {
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(-14 * scale, 2 * scale);
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(14 * scale, -8 * scale);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(-15 * scale, -15 * scale);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(15 * scale, -30 * scale);
+            } else if (pose === 'hit_kasti') {
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(-10 * scale, 0);
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(10 * scale, 0);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(12 * scale, -30 * scale);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(8 * scale, -28 * scale);
+                ctx.stroke();
+
+                // Tongkat Pemukul Kayu Kasti
+                ctx.beginPath();
+                ctx.lineWidth = 6 * scale;
+                ctx.strokeStyle = '#b45309';
+                ctx.moveTo(10 * scale, -28 * scale);
+                ctx.lineTo(26 * scale, -46 * scale);
+            } else if (pose === 'warming_up') {
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(-10 * scale, 0);
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(10 * scale, 0);
+                // Tangan Meregang Pemanasan
+                const armY = extraParam;
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(-22 * scale, -25 * scale + armY);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(22 * scale, -25 * scale - armY);
+            } else {
+                // Idle Pose
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(-10 * scale, 0);
+                ctx.moveTo(0, -10 * scale); ctx.lineTo(10 * scale, 0);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(-12 * scale, -20 * scale);
+                ctx.moveTo(0, -25 * scale); ctx.lineTo(12 * scale, -20 * scale);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawBall(x, y, radius, color) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#0f172a';
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+            ctx.moveTo(x - radius + 2, y);
+            ctx.lineTo(x + radius - 2, y);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        /* NAVIGATION & QUIZ ACTIONS */
+        function startQuiz() {
+            const nameInput = document.getElementById('student-name');
+            const errorMsg = document.getElementById('name-error');
+            const trimmedName = nameInput.value.trim();
+
+            if (!trimmedName) {
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-rose-400');
+                nameInput.focus();
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-rose-400');
+            studentName = trimmedName;
+
+            document.getElementById('display-student-name').innerText = studentName;
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('current-score').innerText = score;
+
+            initCanvasAnimation();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = quizQuestions[currentQuestionIndex];
+            selectedOptionIndex = null;
+            canvasState.action = 'idle';
+
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.add('hidden');
+
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+            nextBtn.className = 'btn-bounce bg-slate-300 text-slate-500 font-extrabold text-lg px-8 py-3 rounded-2xl cursor-not-allowed transition flex items-center gap-2';
+
+            document.getElementById('question-tracker').innerText = `Soal ${currentQuestionIndex + 1}/${quizQuestions.length}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const optionLabels = ['A', 'B', 'C'];
+            const buttonColors = [
+                'hover:border-amber-400 hover:bg-amber-50',
+                'hover:border-sky-400 hover:bg-sky-50',
+                'hover:border-emerald-400 hover:bg-emerald-50'
+            ];
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-bounce w-full text-left p-4 sm:p-5 rounded-2xl border-4 border-slate-200 bg-white font-bold text-lg sm:text-xl text-slate-700 flex items-center gap-4 transition shadow-sm ${buttonColors[idx % 3]}`;
+                btn.onclick = () => selectOption(idx);
+                btn.id = `option-btn-${idx}`;
+                btn.innerHTML = `
+                    <span class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 border-2 border-slate-300 font-extrabold flex items-center justify-center text-lg sm:text-xl shrink-0">
+                        ${optionLabels[idx]}
+                    </span>
+                    <span class="flex-1">${opt}</span>
+                    <i class="fa-regular fa-circle text-2xl text-slate-300 icon-status"></i>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(index) {
+            if (selectedOptionIndex !== null) return;
+            selectedOptionIndex = index;
+
+            const q = quizQuestions[currentQuestionIndex];
+            const isCorrect = (index === q.answer);
+            const feedbackBox = document.getElementById('feedback-box');
+            const nextBtn = document.getElementById('next-btn');
+
+            for (let i = 0; i < q.options.length; i++) {
+                const btn = document.getElementById(`option-btn-${i}`);
+                btn.onclick = null;
+                if (i === q.answer) {
+                    btn.classList.remove('border-slate-200');
+                    btn.classList.add('border-emerald-500', 'bg-emerald-100', 'text-emerald-900');
+                    btn.querySelector('.icon-status').className = 'fa-solid fa-circle-check text-2xl text-emerald-600';
+                } else if (i === index && !isCorrect) {
+                    btn.classList.remove('border-slate-200');
+                    btn.classList.add('border-rose-400', 'bg-rose-100', 'text-rose-900');
+                    btn.querySelector('.icon-status').className = 'fa-solid fa-circle-xmark text-2xl text-rose-500';
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            }
+
+            if (isCorrect) {
+                score += 10;
+                document.getElementById('current-score').innerText = score;
+                canvasState.action = 'correct';
+                playSound('correct');
+
+                try { confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } }); } catch (e) { }
+
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-2xl mr-2"></i> BADAN SEHAT & BUGAR! 👍<br><span class="text-sm text-emerald-800 font-semibold">${q.explanation}</span>`;
+                feedbackBox.className = 'p-4 rounded-2xl mb-4 text-center font-bold text-lg border-4 transition-all bg-emerald-100 border-emerald-400 text-emerald-900 animate-bounce';
+            } else {
+                canvasState.action = 'wrong';
+                playSound('wrong');
+
+                feedbackBox.innerHTML = `<i class="fa-solid fa-heart-pulse text-amber-600 text-2xl mr-2"></i> YUK, COBA LAGI! MARI JAGA BADAN TETAP SEHAT! 😊<br><span class="text-sm text-slate-700 font-semibold">${q.explanation}</span>`;
+                feedbackBox.className = 'p-4 rounded-2xl mb-4 text-center font-bold text-lg border-4 transition-all bg-amber-100 border-amber-400 text-amber-900';
+            }
+
+            nextBtn.disabled = false;
+            nextBtn.className = 'btn-bounce bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-extrabold text-lg px-8 py-3 rounded-2xl shadow-lg border-b-4 border-emerald-700 cursor-pointer transition flex items-center gap-2';
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        async function finishQuiz() {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            playSound('fanfare');
+
+            document.getElementById('result-greeting').innerText = `Hebat, ${studentName}! 🎉`;
+            document.getElementById('final-score-display').innerText = score;
+
+            const correctCount = score / 10;
+            document.getElementById('result-summary').innerText = `Kamu menjawab ${correctCount} dari ${quizQuestions.length} soal dengan benar!`;
+
+            const starsContainer = document.getElementById('stars-container');
+            const appreciationCard = document.getElementById('appreciation-card');
+            const resultIcon = document.getElementById('result-icon');
+
+            if (score >= 80) {
+                resultIcon.innerText = '🏆';
+                starsContainer.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>';
+                appreciationCard.innerHTML = `<strong>"LUAR BIASA BINTANG SEHAT! 🌟"</strong><br>Kamu adalah Juara PJOK MIS NU Palangka Raya! Kamu sudah paham betul cara menjaga kesehatan tubuh lewat aktivitas gerak dan permainan yang menyehatkan!`;
+            } else if (score >= 60) {
+                resultIcon.innerText = '🥇';
+                starsContainer.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i>';
+                appreciationCard.innerHTML = `<strong>"HEBAT DAN SANGAT BUGAR! 👍"</strong><br>Hasilmu sangat baik! Terus rajin bergerak dan berolahraga bersama Ibu Sri Haryati, S.Pd. ya!`;
+            } else {
+                resultIcon.innerText = '🏃';
+                starsContainer.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i><i class="fa-regular fa-star text-slate-300"></i>';
+                appreciationCard.innerHTML = `<strong>"TETAP SEMANGAT BERMAIN & BEROLAH RAGA! 💪"</strong><br>Jangan berkecil hati! Coba pelajari kuis ini sekali lagi agar badanmu makin sehat dan bernilai 100!`;
+            }
+
+            if (score >= 70) {
+                try { confetti({ particleCount: 120, spread: 100, origin: { y: 0.6 } }); } catch (e) { }
+            }
+
+            await kirimSkorKeServerMilikSendiri(studentName, score, correctCount, quizQuestions.length);
+        }
+
+        function restartQuiz() {
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+        }
+
+        /* TEACHER MODAL & VERIFICATION */
+        let teacherUnlocked = false;
+
+        function openTeacherPinModal() {
+            if (teacherUnlocked) {
+                showTeacherModal();
+                return;
+            }
+            document.getElementById('pin-input').value = '';
+            document.getElementById('pin-error').classList.add('hidden');
+            document.getElementById('pin-modal').classList.remove('hidden');
+        }
+
+        function closePinModal() {
+            document.getElementById('pin-modal').classList.add('hidden');
+        }
+
+        function verifyPin() {
+            const pin = document.getElementById('pin-input').value.trim();
+            if (pin === '1234' || pin === '1926') {
+                teacherUnlocked = true;
+                closePinModal();
+                showTeacherModal();
+            } else {
+                document.getElementById('pin-error').classList.remove('hidden');
+            }
+        }
+
+        async function showTeacherModal() {
+            document.getElementById('teacher-modal').classList.remove('hidden');
+            await loadDataRekapGuru();
+        }
+
+        function renderTabelGuru(records) {
+            const tbody = document.getElementById('teacher-table-body');
+            const emptyMsg = document.getElementById('empty-data-msg');
+            tbody.innerHTML = '';
+
+            if (!records || records.length === 0) {
+                emptyMsg.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+                records.forEach((rec, idx) => {
+                    const rowData = normalizeDataRow(rec);
+                    const tr = document.createElement('tr');
+                    tr.className = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
+                    tr.innerHTML = `
+                        <td class="p-3 border-b font-bold text-slate-500">${idx + 1}</td>
+                        <td class="p-3 border-b font-bold text-emerald-900">${escapeHtml(rowData.name)}</td>
+                        <td class="p-3 border-b text-center"><span class="bg-amber-100 text-amber-900 font-extrabold px-2.5 py-1 rounded-full text-xs">${rowData.score}</span></td>
+                        <td class="p-3 border-b text-center font-bold">${rowData.correct}/${rowData.total}</td>
+                        <td class="p-3 border-b text-slate-500 text-xs">${rowData.date}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        function closeTeacherModal() {
+            document.getElementById('teacher-modal').classList.hidden = true;
+            document.getElementById('teacher-modal').classList.add('hidden');
+        }
+
+        function promptClearRecap() {
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        function executeClearRecap() {
+            localStorage.removeItem('pjok_quiz_recap');
+            window.currentRealtimeRecords = [];
+            renderTabelGuru([]);
+            closeConfirmModal();
+            tampilkanNotifikasiToast("Data rekap lokal berhasil dibersihkan!");
+        }
+
+        function downloadCSV() {
+            let records = window.currentRealtimeRecords || [];
+            if (records.length === 0) {
+                records = getLocalRecords();
+            }
+
+            if (records.length === 0) {
+                tampilkanNotifikasiToast("⚠️ Belum ada data nilai untuk diunduh!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No,Nama Siswa,Skor Akhir,Jumlah Benar,Total Soal,Tanggal Pengerjaan,Sekolah,Guru\n";
+
+            records.forEach((rec, idx) => {
+                const r = normalizeDataRow(rec);
+                const cleanName = `"${r.name.replace(/"/g, '""')}"`;
+                csvContent += `${idx + 1},${cleanName},${r.score},${r.correct},${r.total},"${r.date}","MIS NU Palangka Raya","Sri Haryati, S.Pd."\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Nilai_PJOK_MIS_NU_PalangkaRaya_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>"']/g, function (m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+
+</html>
